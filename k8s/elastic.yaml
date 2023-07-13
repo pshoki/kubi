@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-deployment
+  labels:
+    app: elastic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic
+  template:
+    metadata:
+      labels:
+        app: elastic
+    spec:
+      containers:
+      - name: elasticdb
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+        ports:
+        - containerPort: 9200
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: "0.5"
+            memory: 1Gi
+        env:
+        - name: ES_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+        - name: discovery.type
+          value: single-node
+        - name: ELASTIC_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: elastic-secret
+              key: elastic-username
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elastic-secret
+              key: elastic-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-service
+spec:
+  selector:
+    app: elastic
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
+      
+      
+    

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: indexer-deployment
+  labels:
+    app: indexer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: indexer
+  template:
+    metadata:
+      labels:
+        app: indexer
+    spec:
+      containers:
+      - name: indexer
+        image: brhon/kubi-indexer:latest
+        env:
+        - name: AMQP_URI
+          valueFrom:
+            secretKeyRef:
+              name: indexer-secret
+              key: amqp-uri
+        - name: ELASTICSEARCH_URI
+          valueFrom:
+            configMapKeyRef:
+              name: elastic-config
+              key: elastic-uri
