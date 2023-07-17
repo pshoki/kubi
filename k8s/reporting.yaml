@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: reporting
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: reporting
+            image: brhon/kubi-reporting:latest
+            env:
+            - name: DB_URI 
+              valueFrom:
+                secretKeyRef:
+                  name: reporting-secret
+                  key: db-uri
+            - name: WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: reporting-secret
+                  key: webhook-url
+            command:
+            - /bin/sh
+            - -c
+            - date; ./reporting
+          restartPolicy: OnFailure

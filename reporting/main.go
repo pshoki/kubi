@@ -44,7 +44,6 @@ func sendMessageToTeams(webhookURL string, productCount int) error {
 func main() {
 	dbURI := os.Getenv("DB_URI")
 	webhookURL := os.Getenv("WEBHOOK_URL")
-	err := sendMessageToTeams(webhookURL, 42)
 
 	if len(dbURI) == 0 {
 		log.Fatal("Missing DB_URI environment variable")
